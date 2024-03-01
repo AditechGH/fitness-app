@@ -3,11 +3,14 @@
   "version": 1,
   "newProjectRoot": "projects",
   "projects": {
-    "angular-pro": {
+    "fitness-app": {
       "projectType": "application",
       "schematics": {
         "@schematics/angular:component": {
-          "style": "scss"
+          "style": "scss",
+          "inlineTemplate": true,
+          "standalone": true,
+          "inlineStyle": false
         }
       },
       "root": "",
@@ -17,7 +20,7 @@
         "build": {
           "builder": "@angular-devkit/build-angular:application",
           "options": {
-            "outputPath": "dist/angular-pro",
+            "outputPath": "dist/fitness-app",
             "index": "src/index.html",
             "browser": "src/main.ts",
             "polyfills": [
@@ -53,19 +56,23 @@
             "development": {
               "optimization": false,
               "extractLicenses": false,
-              "sourceMap": true
+              "sourceMap": true,
+              "namedChunks": true
             }
           },
           "defaultConfiguration": "production"
         },
         "serve": {
+          "options": {
+            "proxyConfig": "proxy.config.json"
+          },
           "builder": "@angular-devkit/build-angular:dev-server",
           "configurations": {
             "production": {
-              "buildTarget": "angular-pro:build:production"
+              "buildTarget": "fitness-app:build:production"
             },
             "development": {
-              "buildTarget": "angular-pro:build:development"
+              "buildTarget": "fitness-app:build:development"
             }
           },
           "defaultConfiguration": "development"
@@ -73,7 +80,7 @@
         "extract-i18n": {
           "builder": "@angular-devkit/build-angular:extract-i18n",
           "options": {
-            "buildTarget": "angular-pro:build"
+            "buildTarget": "fitness-app:build"
           }
         },
         "test": {
@@ -94,8 +101,28 @@
             ],
             "scripts": []
           }
+        },
+        "deploy": {
+          "builder": "@angular/fire:deploy",
+          "options": {
+            "version": 2
+          },
+          "configurations": {
+            "production": {
+              "buildTarget": "fitness-app:build:production",
+              "serveTarget": "fitness-app:serve:production"
+            },
+            "development": {
+              "buildTarget": "fitness-app:build:development",
+              "serveTarget": "fitness-app:serve:development"
+            }
+          },
+          "defaultConfiguration": "production"
         }
       }
     }
+  },
+  "cli": {
+    "analytics": false
   }
 }

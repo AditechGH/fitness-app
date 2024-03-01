@@ -1,0 +1,14 @@
+{
+  "targets": {
+    "aditek-fitness-app-2024": {
+      "hosting": {
+        "fitness-app": [
+          "aditek-fitness-app-2024"
+        ]
+      }
+    }
+  },
+  "projects": {
+    "default": "aditek-fitness-app-2024"
+  }
+}
