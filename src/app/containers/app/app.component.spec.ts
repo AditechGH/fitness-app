@@ -20,10 +20,11 @@ describe('AppComponent', () => {
     expect(app.title).toEqual('Fitness app');
   });
 
-  it('should render title', () => {
+  it('should have an outlet tag', () => {
     const fixture = TestBed.createComponent(AppComponent);
     fixture.detectChanges();
     const compiled = fixture.nativeElement as HTMLElement;
     expect(compiled.querySelector('h1')?.textContent).toContain('Hello, Fitness app');
+    expect(compiled.querySelector('router-outlet')).toBeTruthy();
   });
 });

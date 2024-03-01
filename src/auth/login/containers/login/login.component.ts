@@ -1,16 +1,23 @@
 import { Component } from '@angular/core';
+import { FormGroup } from '@angular/forms';
+import { ActivatedRoute, RouterModule } from '@angular/router';
+
+import { AuthFormComponent } from '../../../shared/components/auth-form/auth-form.component';
 
 @Component({
-  selector: 'app-login',
+  selector: 'login',
   standalone: true,
-  imports: [],
+  imports: [RouterModule, AuthFormComponent],
   template: `
-    <p>
-      login works!
-    </p>
+    <auth-form (submitted)="loginUser($event)">
+      <h1>Login</h1>
+      <a routerLink="/auth/register">Not registered?</a>
+      <button type="submit">Login</button>
+    </auth-form>
   `,
-  styleUrl: './login.component.scss'
 })
 export class LoginComponent {
-
+  loginUser(event: FormGroup) {
+    console.log(event.value);
+  }
 }
