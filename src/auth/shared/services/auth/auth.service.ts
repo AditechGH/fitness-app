@@ -37,7 +37,9 @@ export class AuthService {
     })
   );
 
-  constructor() {}
+  get authState() {
+    return authState(this._auth);
+  }
 
   createUser(email: string, password: string): Promise<UserCredential> {
     return createUserWithEmailAndPassword(this._auth, email, password);
