@@ -1,7 +1,7 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { FormControl } from '@angular/forms';
 
 import { AuthFormComponent } from './auth-form.component';
-import { FormControl, FormGroup, Validators } from '@angular/forms';
 
 describe('AuthFormComponent', () => {
   let component: AuthFormComponent;
@@ -38,7 +38,7 @@ describe('AuthFormComponent', () => {
     expect(form.value).toEqual(formValues);
   });
 
-  it('should check email value after entring some value and validation', async () => {
+  it('should check email value after entering some value and validation', async () => {
     const formElement = el.querySelector('#form');
     const emailElement = formElement?.querySelectorAll(
       'input'
@@ -47,25 +47,26 @@ describe('AuthFormComponent', () => {
 
     expect(emailElement?.value).toEqual(emailFormControl?.value);
     emailElement.value = 'email';
+    emailFormControl.markAsTouched();
     emailElement.dispatchEvent(new Event('input'));
 
     fixture.detectChanges();
     await fixture.whenStable();
 
-    expect(emailFormControl.errors).not.toBeNull();
-    expect(emailFormControl?.hasError('email')).toBeTruthy();
+    expect(component.emailFormat).toBeTruthy();
   });
 
-  it('should check passowrd value before entring some value and validation', () => {
+  it('should check password value before entering some value and validation', () => {
     const formElement = el.querySelector('#form');
-    const passowrdElement = formElement?.querySelectorAll(
+    const passwordElement = formElement?.querySelectorAll(
       'input'
     )[1] as HTMLInputElement;
     const passwordFormControl = component.form.get('password') as FormControl;
 
-    expect(passowrdElement?.value).toEqual(passwordFormControl?.value);
-    expect(passwordFormControl.errors).not.toBeNull();
-    expect(passwordFormControl?.hasError('required')).toBeTruthy();
+    expect(passwordElement?.value).toEqual(passwordFormControl?.value);
+    passwordFormControl.markAsTouched();
+
+    expect(component.passwordInvalid).toBeTruthy();
   });
 
   it('should call the output on emit when form is valid', async () => {
