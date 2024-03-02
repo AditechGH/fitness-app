@@ -2,9 +2,10 @@ import { Injectable, inject } from '@angular/core';
 import {
   Auth,
   UserCredential,
+  authState,
   createUserWithEmailAndPassword,
   signInWithEmailAndPassword,
-  authState,
+  signOut,
 } from '@angular/fire/auth';
 import { tap } from 'rxjs';
 
@@ -25,6 +26,7 @@ export class AuthService {
     tap((next) => {
       if (!next) {
         this._store.set('user', null);
+        return;
       }
       const user: User = {
         email: next?.email!,
@@ -43,5 +45,9 @@ export class AuthService {
 
   loginUser(email: string, password: string): Promise<UserCredential> {
     return signInWithEmailAndPassword(this._auth, email, password);
+  }
+
+  logoutUser() {
+    return signOut(this._auth);
   }
 }

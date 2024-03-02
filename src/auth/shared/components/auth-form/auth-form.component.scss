@@ -28,8 +28,8 @@
     font-weight: 600;
     transition: all 0.2s ease-in-out;
     &:hover {
-      background: darken($color: #39a1e7, $amount: 5%);
-      border-color: darken($color: #1c79b8, $amount: 5%);
+      background: darken(#39a1e7, 5%);
+      border-color: darken(#1c79b8, 5%);
     }
     &:disabled {
       opacity: 0.4;
@@ -67,11 +67,11 @@
     margin: 0;
   }
   input {
-    outline: none;
+    outline: 0;
     font-size: 16px;
     padding: 10px 15px;
     margin: 0;
-    width: 92%;
+    width: 100%;
     background: #fafcfd;
     color: #5777a8;
     border: 1px solid #d1deeb;
@@ -79,11 +79,11 @@
     &::-webkit-input-placeholder {
       color: #5777a8;
     }
-    &[type=email] {
+    &[type="email"] {
       border-radius: 3px 3px 0 0;
     }
-    &[type=password] {
-      border-radius: 0px 0px 3px 3px;
+    &[type="password"] {
+      border-radius: 0 0 3px 3px;
       margin: -1px 0 0;
     }
   }
