@@ -10,6 +10,7 @@ import { provideRouter } from '@angular/router';
 
 import { Store } from 'store';
 import { appRoutes } from './app.routes';
+import { AuthService } from '../auth/shared/services/auth/auth.service';
 
 export const firebaseConfig: FirebaseOptions = {
   projectId: 'aditek-fitness-app-2024',
@@ -29,5 +30,6 @@ export const appConfig: ApplicationConfig = {
     importProvidersFrom(provideAuth(() => getAuth())),
     importProvidersFrom(provideFirestore(() => getFirestore())),
     Store,
+    AuthService
   ],
 };
