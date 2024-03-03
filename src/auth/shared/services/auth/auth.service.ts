@@ -37,6 +37,10 @@ export class AuthService {
     })
   );
 
+  get user() {
+    return this._auth.currentUser;
+  }
+
   get authState() {
     return authState(this._auth);
   }
