@@ -1,4 +1,6 @@
+import { AsyncPipe, JsonPipe, NgIf } from '@angular/common';
 import { Component, OnDestroy, OnInit, inject } from '@angular/core';
+import { RouterLink } from '@angular/router';
 import { Observable, Subscription } from 'rxjs';
 import { Store } from 'store';
 
@@ -6,15 +8,35 @@ import {
   Meal,
   MealsService,
 } from '../../../shared/services/meals/meals.service';
-import { AsyncPipe, JsonPipe } from '@angular/common';
 
 @Component({
   selector: 'meals',
   standalone: true,
-  imports: [AsyncPipe, JsonPipe],
+  imports: [AsyncPipe, JsonPipe, RouterLink, NgIf],
   template: `
-    <div>
-      {{ meals$ | async | json }}
+    <div class="meals">
+      <div class="meals__title">
+        <h1>
+          <img src="/assets/img/food.svg" alt="food" />
+          Your meals
+        </h1>
+        <a class="btn__add" routerLink="../meals/new">
+          <img src="/assets/img/add-white.svg" alt="add" />New meal</a
+        >
+      </div>
+      <div *ngIf="meals$ | async as meals; else loading">
+        <div class="message" *ngIf="!meals.length">
+          <img src="/assets/img/face.svg" alt="" /> No meals, add a meal to
+          start
+        </div>
+        <!-- meals -->
+
+      </div>
+      <ng-template #loading>
+        <div class="message">
+          <img src="/assets/img/loading.svg" alt="" /> Fetching meals...
+        </div>
+      </ng-template>
     </div>
   `,
   styleUrl: './meals.component.scss',
