@@ -6,8 +6,8 @@ import { Store } from 'store';
 import { AuthService } from '../../../../auth/shared/services/auth/auth.service';
 
 export interface Meal {
-  name: string;
-  ingredients: string[];
+  name: string | null;
+  ingredients: (string | null)[];
   timestamp: number;
   $key: string;
   $exists: () => boolean;
