@@ -1,6 +1,6 @@
 import { Injectable, inject } from '@angular/core';
-import { Database, list, push, ref } from '@angular/fire/database';
-import { Observable, tap } from 'rxjs';
+import { Database, list, push, ref, remove } from '@angular/fire/database';
+import { Observable, first, map, tap } from 'rxjs';
 import { Store } from 'store';
 
 import { AuthService } from '../../../../auth/shared/services/auth/auth.service';
@@ -19,7 +19,14 @@ export class MealsService {
   private _db: Database = inject(Database);
   private _authService: AuthService = inject(AuthService);
 
-  meals$: Observable<any> = list(ref(this._db, `meals/${this.uid}`)).pipe(
+  meals$ = list(ref(this._db, `meals/${this.uid}`)).pipe(
+    map((items) =>
+      items.map((item) => ({
+        ...item.snapshot.val(),
+        $key: item.snapshot.key,
+        $exists: item.snapshot.exists,
+      }))
+    ),
     tap((next) => this._store.set('meals', next))
   );
 
@@ -29,5 +36,9 @@ export class MealsService {
 
   addMeal(meal: Partial<Meal>) {
     return push(ref(this._db, `meals/${this.uid}`), meal);
+  }
+
+  removeMeal(key: string) {
+    return remove(ref(this._db, `meals/${this.uid}/${key}`));
   }
 }

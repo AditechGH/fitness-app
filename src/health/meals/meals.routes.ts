@@ -9,4 +9,9 @@ export const routes: Routes = [
     loadComponent: () =>
       import('./containers/meal/meal.component').then((x) => x.MealComponent),
   },
+  {
+    path: ':id',
+    loadComponent: () =>
+      import('./containers/meal/meal.component').then((x) => x.MealComponent),
+  },
 ];
