@@ -1,5 +1,5 @@
 import { Injectable, inject } from '@angular/core';
-import { Database, list, ref } from '@angular/fire/database';
+import { Database, list, push, ref } from '@angular/fire/database';
 import { Observable, tap } from 'rxjs';
 import { Store } from 'store';
 
@@ -25,5 +25,9 @@ export class MealsService {
 
   get uid() {
     return this._authService.user?.uid;
+  }
+
+  addMeal(meal: Partial<Meal>) {
+    return push(ref(this._db, `meals/${this.uid}`), meal);
   }
 }

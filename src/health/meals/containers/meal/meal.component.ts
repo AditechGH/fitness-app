@@ -1,7 +1,12 @@
-import { Component } from '@angular/core';
+import { Component, inject } from '@angular/core';
 
 import { MealFormComponent } from '../../components/meal-form/meal-form.component';
-import { Meal } from '../../../shared/services/meals/meals.service';
+
+import {
+  Meal,
+  MealsService,
+} from '../../../shared/services/meals/meals.service';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-meal',
@@ -23,7 +28,15 @@ import { Meal } from '../../../shared/services/meals/meals.service';
   styleUrl: './meal.component.scss',
 })
 export class MealComponent {
-  addMeal(meal: Partial<Meal>) {
-    console.log('Meal: ', meal);
+  private _mealService: MealsService = inject(MealsService);
+  private router: Router = inject(Router);
+
+  async addMeal(event: Partial<Meal>) {
+    await this._mealService.addMeal(event);
+    this.backToMeals();
+  }
+
+  backToMeals() {
+    this.router.navigate(['meals']);
   }
 }

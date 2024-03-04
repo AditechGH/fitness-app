@@ -1,8 +1,10 @@
-import { AsyncPipe, JsonPipe, NgIf } from '@angular/common';
+import { AsyncPipe, JsonPipe, NgForOf, NgIf } from '@angular/common';
 import { Component, OnDestroy, OnInit, inject } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { Observable, Subscription } from 'rxjs';
 import { Store } from 'store';
+
+import { ListItemComponent } from '../../../shared/components/list-item/list-item.component';
 
 import {
   Meal,
@@ -12,7 +14,7 @@ import {
 @Component({
   selector: 'meals',
   standalone: true,
-  imports: [AsyncPipe, JsonPipe, RouterLink, NgIf],
+  imports: [AsyncPipe, JsonPipe, RouterLink, NgIf, NgForOf, ListItemComponent],
   template: `
     <div class="meals">
       <div class="meals__title">
@@ -30,8 +32,11 @@ import {
           start
         </div>
         <!-- meals -->
+        <list-item *ngFor="let meal of meals" [item]="meal">
 
+        </list-item>
       </div>
+      <!-- loading -->
       <ng-template #loading>
         <div class="message">
           <img src="/assets/img/loading.svg" alt="" /> Fetching meals...
