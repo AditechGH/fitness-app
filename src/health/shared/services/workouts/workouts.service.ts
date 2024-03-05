@@ -14,7 +14,7 @@ import { AuthService } from '../../../../auth/shared/services/auth/auth.service'
 
 export interface Workout {
   name: string | null;
-  type: string;
+  type: string | null;
   strength: any;
   endurance: any;
   timestamp: number;

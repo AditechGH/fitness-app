@@ -19,12 +19,13 @@ import {
 import { RouterLink } from '@angular/router';
 
 import { Workout } from '../../../shared/services/workouts/workouts.service';
+import { WorkoutTypeComponent } from '../workout-type/workout-type.component';
 
 @Component({
   selector: 'workout-form',
   changeDetection: ChangeDetectionStrategy.OnPush,
   standalone: true,
-  imports: [ReactiveFormsModule, RouterLink, NgForOf, NgIf],
+  imports: [ReactiveFormsModule, RouterLink, NgForOf, NgIf, WorkoutTypeComponent],
   template: `
     <div class="workout-form">
       <form [formGroup]="form">
@@ -38,6 +39,11 @@ import { Workout } from '../../../shared/services/workouts/workouts.service';
               formControlName="name"
             />
             <div class="error" *ngIf="required">Workout name is required.</div>
+          </label>
+
+          <label>
+            <h3>Type</h3>
+            <workout-type formControlName="type"></workout-type>
           </label>
         </div>
     
@@ -104,6 +110,7 @@ export class WorkoutFormComponent implements OnChanges {
 
   form = this._fb.group({
     name: ['', Validators.required],
+    type: ['strength'],
   });
 
   ngOnChanges(changes: SimpleChanges): void {
