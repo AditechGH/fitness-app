@@ -1,28 +1,34 @@
-import { JsonPipe, NgIf } from '@angular/common';
+import { NgIf } from '@angular/common';
 import {
   ChangeDetectionStrategy,
   Component,
   EventEmitter,
   Input,
-  OnInit,
-  Output,
+  Output
 } from '@angular/core';
 import { RouterLink } from '@angular/router';
+
+// pipes
+import { JoinPipe } from '../../pipes/join/join.pipe';
+import { WorkoutPipe } from '../../pipes/workout/workout.pipe';
 
 @Component({
   selector: 'list-item',
   changeDetection: ChangeDetectionStrategy.OnPush,
   standalone: true,
-  imports: [NgIf, RouterLink],
+  imports: [NgIf, RouterLink, JoinPipe, WorkoutPipe],
   template: `
     <div class="list-item">
       <a [routerLink]="getRoute(item)">
         <p class="list-item__name">{{ item.name }}</p>
         <p class="list-item__ingredients">
-          <span>
-            {{ item.ingredients }}
+          <span *ngIf="item.ingredients; else showWorkout">
+            {{ item.ingredients | join }}
           </span>
         </p>
+        <ng-template #showWorkout>
+          <span>{{ item | workout }}</span>
+        </ng-template>
       </a>
       <div *ngIf="toggled" class="list-item__delete">
         <p>Delete item?</p>
@@ -57,6 +63,6 @@ export class ListItemComponent {
   }
 
   getRoute(item: any) {
-    return [`../meals`, item.$key];
+    return [`../${item.ingredients ? 'meals' : 'workouts'}`, item.$key];
   }
 }
