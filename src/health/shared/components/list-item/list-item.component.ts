@@ -1,11 +1,10 @@
-import { JsonPipe, NgIf } from '@angular/common';
+import { NgIf } from '@angular/common';
 import {
   ChangeDetectionStrategy,
   Component,
   EventEmitter,
   Input,
-  OnInit,
-  Output,
+  Output
 } from '@angular/core';
 import { RouterLink } from '@angular/router';
 
@@ -13,7 +12,7 @@ import { RouterLink } from '@angular/router';
   selector: 'list-item',
   changeDetection: ChangeDetectionStrategy.OnPush,
   standalone: true,
-  imports: [JsonPipe, NgIf, RouterLink],
+  imports: [NgIf, RouterLink],
   template: `
     <div class="list-item">
       <a [routerLink]="getRoute(item)">

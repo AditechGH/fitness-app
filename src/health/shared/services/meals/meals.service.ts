@@ -1,6 +1,13 @@
 import { Injectable, inject } from '@angular/core';
-import { Database, list, push, ref, remove } from '@angular/fire/database';
-import { Observable, filter, first, map, of, tap } from 'rxjs';
+import {
+  Database,
+  list,
+  push,
+  ref,
+  remove,
+  update,
+} from '@angular/fire/database';
+import { filter, map, of, tap } from 'rxjs';
 import { Store } from 'store';
 
 import { AuthService } from '../../../../auth/shared/services/auth/auth.service';
@@ -44,6 +51,10 @@ export class MealsService {
 
   addMeal(meal: Partial<Meal>) {
     return push(ref(this._db, `meals/${this.uid}`), meal);
+  }
+
+  updateMeal(key: string, meal: Partial<Meal>) {
+    return update(ref(this._db, `meals/${this.uid}/${key}`), meal);
   }
 
   removeMeal(key: string) {
