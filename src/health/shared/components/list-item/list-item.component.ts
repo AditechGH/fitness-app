@@ -1,10 +1,11 @@
-import { NgIf } from '@angular/common';
+import { JsonPipe, NgIf } from '@angular/common';
 import {
   ChangeDetectionStrategy,
   Component,
   EventEmitter,
   Input,
-  Output
+  OnInit,
+  Output,
 } from '@angular/core';
 import { RouterLink } from '@angular/router';
 

@@ -14,7 +14,7 @@ import {
 @Component({
   selector: 'meals',
   standalone: true,
-  imports: [AsyncPipe, JsonPipe, RouterLink, NgIf, NgForOf, ListItemComponent],
+  imports: [AsyncPipe, RouterLink, NgIf, NgForOf, ListItemComponent],
   template: `
     <div class="meals">
       <div class="meals__title">
