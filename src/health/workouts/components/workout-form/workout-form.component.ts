@@ -25,7 +25,13 @@ import { WorkoutTypeComponent } from '../workout-type/workout-type.component';
   selector: 'workout-form',
   changeDetection: ChangeDetectionStrategy.OnPush,
   standalone: true,
-  imports: [ReactiveFormsModule, RouterLink, NgForOf, NgIf, WorkoutTypeComponent],
+  imports: [
+    ReactiveFormsModule,
+    RouterLink,
+    NgForOf,
+    NgIf,
+    WorkoutTypeComponent,
+  ],
   template: `
     <div class="workout-form">
       <form [formGroup]="form">
@@ -35,7 +41,7 @@ import { WorkoutTypeComponent } from '../workout-type/workout-type.component';
             <h3>Workout name</h3>
             <input
               type="text"
-              placeholder="e.g. English Breakfast"
+              [placeholder]="placeholder"
               formControlName="name"
             />
             <div class="error" *ngIf="required">Workout name is required.</div>
@@ -46,11 +52,49 @@ import { WorkoutTypeComponent } from '../workout-type/workout-type.component';
             <workout-type formControlName="type"></workout-type>
           </label>
         </div>
-    
+
+        <!-- details -->
+        <div class="workout-form__details">
+          <div *ngIf="form.get('type')?.value === 'strength'">
+            <div class="workout-form__fields" formGroupName="strength">
+              <label>
+                <h3>Reps</h3>
+                <input type="number" formControlName="reps" />
+              </label>
+              <label>
+                <h3>Sets</h3>
+                <input type="number" formControlName="sets" />
+              </label>
+              <label>
+                <h3>Weight <span>(kg)</span></h3>
+                <input type="number" formControlName="weight" />
+              </label>
+            </div>
+          </div>
+
+          <div *ngIf="form.get('type')?.value === 'endurance'">
+            <div class="workout-form__fields" formGroupName="endurance">
+              <label>
+                <h3>Distance <span>(km)</span></h3>
+                <input type="number" formControlName="distance" />
+              </label>
+              <label>
+                <h3>Duration <span>(minutes)</span></h3>
+                <input type="number" formControlName="duration" />
+              </label>
+            </div>
+          </div>
+        </div>
+
         <!-- submit -->
         <div class="workout-form__submit">
           <div>
-            <button *ngIf="!exists" type="button" class="button" (click)="createWorkout()">
+            <button
+              *ngIf="!exists"
+              type="button"
+              class="button"
+              (click)="createWorkout()"
+            >
               Create workout
             </button>
             <button
@@ -111,7 +155,24 @@ export class WorkoutFormComponent implements OnChanges {
   form = this._fb.group({
     name: ['', Validators.required],
     type: ['strength'],
+    strength: this._fb.group({
+      reps: 0,
+      sets: 0,
+      weight: 0,
+    }),
+    endurance: this._fb.group({
+      distance: 0,
+      duration: 0,
+    }),
   });
+
+  get placeholder() {
+    return `
+    e.g. ${
+      this.form.get('type')?.value === 'strength' ? 'Benchpress' : 'Treadmill'
+    }
+    `;
+  }
 
   ngOnChanges(changes: SimpleChanges): void {
     if (this.workout && this.workout.name) {
@@ -119,7 +180,6 @@ export class WorkoutFormComponent implements OnChanges {
 
       const value = this.workout;
       this.form.patchValue(value);
-
     }
   }
 
@@ -129,7 +189,6 @@ export class WorkoutFormComponent implements OnChanges {
       this.form.get('name')?.touched
     );
   }
-
 
   createWorkout(): void {
     if (this.form.valid) {
