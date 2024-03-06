@@ -1,22 +1,25 @@
 import { Injectable, inject } from '@angular/core';
 import {
+  Database,
+  endAt,
+  list,
+  orderByChild,
+  push,
+  query,
+  ref,
+  startAt,
+  update,
+} from '@angular/fire/database';
+import {
   BehaviorSubject,
   Observable,
   Subject,
   map,
   switchMap,
   tap,
+  withLatestFrom,
 } from 'rxjs';
 import { Store } from 'store';
-import {
-  Database,
-  endAt,
-  list,
-  orderByChild,
-  query,
-  ref,
-  startAt,
-} from '@angular/fire/database';
 
 // service
 import { AuthService } from '../../../../auth/shared/services/auth/auth.service';
@@ -26,8 +29,8 @@ import { Meal } from '../meals/meals.service';
 import { Workout } from '../workouts/workouts.service';
 
 export interface ScheduleItem {
-  meals: Meal[];
-  workouts: Workout[];
+  meals: Meal[] | null;
+  workouts: Workout[] | null;
   section: string;
   timestamp: number;
   $key?: string;
@@ -42,7 +45,7 @@ export interface ScheduleList {
 }
 
 export interface ListItem {
-  name: string; 
+  name: string;
 }
 
 @Injectable()
@@ -53,6 +56,33 @@ export class ScheduleService {
 
   private date$ = new BehaviorSubject(new Date());
   private section$ = new Subject();
+  private itemList$ = new Subject();
+
+  items$ = this.itemList$.pipe(
+    withLatestFrom(this.section$),
+    map(([items, section]: any) => {
+      const id = section.data.$key;
+
+      const defaults: ScheduleItem = {
+        workouts: null,
+        meals: null,
+        section: section.section,
+        timestamp: new Date(section.day).getTime(),
+      };
+
+      const payload = {
+        ...(id ? section.data : defaults),
+        ...items,
+      };
+
+      if (id) {
+        delete payload.$key;
+        return this.updateSection(id, payload);
+      } else {
+        return this.createSection(payload);
+      }
+    })
+  );
 
   selected$ = this.section$.pipe(
     tap((next: any) => this._store.set('selected', next))
@@ -100,12 +130,24 @@ export class ScheduleService {
     return this._authService.user?.uid;
   }
 
+  updateItems(items: string[]) {
+    this.itemList$.next(items);
+  }
+
   updateDate(date: Date) {
     this.date$.next(date);
   }
 
   selectSection(event: any) {
     this.section$.next(event);
+  }
+
+  private updateSection(key: string, payload: ScheduleItem) {
+    return update(ref(this._db, `schedule/${this.uid}/${key}`), payload);
+  }
+
+  private createSection(payload: ScheduleItem) {
+    return push(ref(this._db, `schedule/${this.uid}`), payload);
   }
 
   private getSchedule(_startAt: number, _endAt: number) {
@@ -115,6 +157,13 @@ export class ScheduleService {
         orderByChild('timestamp'),
         startAt(_startAt),
         endAt(_endAt)
+      )
+    ).pipe(
+      map((items) =>
+        items.map((item) => ({
+          ...item.snapshot.val(),
+          $key: item.snapshot.key,
+        }))
       )
     );
   }
