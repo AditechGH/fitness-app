@@ -7,7 +7,10 @@ import { Store } from 'store';
 import { ScheduleCalendarComponent } from '../../components/schedule-calendar/schedule-calendar.component';
 
 // service
-import { ScheduleList, ScheduleService } from '../../../shared/services/schedule/schedule.service';
+import {
+  ScheduleList,
+  ScheduleService,
+} from '../../../shared/services/schedule/schedule.service';
 
 @Component({
   selector: 'schedule',
@@ -19,6 +22,7 @@ import { ScheduleList, ScheduleService } from '../../../shared/services/schedule
         [date]="(date$ | async)!"
         [items]="(schedule$ | async)!"
         (change)="changeDate($event)"
+        (select)="changeSection($event)"
       ></schedule-calendar>
     </div>
   `,
@@ -36,11 +40,18 @@ export class ScheduleComponent implements OnInit, OnDestroy {
     this._scheduleService.updateDate(date);
   }
 
+  changeSection(event: any) {
+    this._scheduleService.selectSection(event);
+  }
+
   ngOnInit(): void {
     this.date$ = this._store.select('date');
     this.schedule$ = this._store.select('date');
 
-    this.subscriptions = [this._scheduleService.schedule$.subscribe()];
+    this.subscriptions = [
+      this._scheduleService.schedule$.subscribe(),
+      this._scheduleService.selected$.subscribe(),
+    ];
   }
 
   ngOnDestroy(): void {

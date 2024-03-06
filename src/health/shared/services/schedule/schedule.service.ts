@@ -1,5 +1,12 @@
 import { Injectable, inject } from '@angular/core';
-import { BehaviorSubject, Observable, map, switchMap, tap } from 'rxjs';
+import {
+  BehaviorSubject,
+  Observable,
+  Subject,
+  map,
+  switchMap,
+  tap,
+} from 'rxjs';
 import { Store } from 'store';
 import {
   Database,
@@ -41,6 +48,11 @@ export class ScheduleService {
   private _authService: AuthService = inject(AuthService);
 
   private date$ = new BehaviorSubject(new Date());
+  private section$ = new Subject();
+
+  selected$ = this.section$.pipe(
+    tap((next: any) => this._store.set('selected', next))
+  );
 
   schedule$: Observable<ScheduleList> = this.date$.pipe(
     tap((next) => this._store.set('date', next)),
@@ -81,6 +93,10 @@ export class ScheduleService {
 
   updateDate(date: Date) {
     this.date$.next(date);
+  }
+
+  selectSection(event: any) {
+    this.section$.next(event);
   }
 
   private getSchedule(_startAt: number, _endAt: number) {
