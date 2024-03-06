@@ -4,15 +4,25 @@ import {
   Input,
   OnChanges,
   Output,
-  SimpleChanges,
 } from '@angular/core';
 import { ScheduleControlsComponent } from '../schedule-controls/schedule-controls.component';
 import { ScheduleDaysComponent } from '../schedule-days/schedule-days.component';
+import {
+  ScheduleItem,
+  ScheduleList,
+} from '../../../shared/services/schedule/schedule.service';
+import { ScheduleSectionComponent } from '../schedule-section/schedule-section.component';
+import { NgForOf } from '@angular/common';
 
 @Component({
   selector: 'schedule-calendar',
   standalone: true,
-  imports: [ScheduleControlsComponent, ScheduleDaysComponent],
+  imports: [
+    NgForOf,
+    ScheduleControlsComponent,
+    ScheduleDaysComponent,
+    ScheduleSectionComponent,
+  ],
   template: `
     <div class="calendar">
       <schedule-controls [selected]="selectedDay" (move)="onChange($event)">
@@ -20,6 +30,13 @@ import { ScheduleDaysComponent } from '../schedule-days/schedule-days.component'
 
       <schedule-days [selected]="selectedDayIndex" (select)="selectDay($event)">
       </schedule-days>
+
+      <schedule-section
+        *ngFor="let section of sections"
+        [name]="section.name"
+        [section]="getSection(section.key)"
+      >
+      </schedule-section>
     </div>
   `,
   styleUrl: './schedule-calendar.component.scss',
@@ -29,10 +46,20 @@ export class ScheduleCalendarComponent implements OnChanges {
   selectedDay!: Date;
   selectedWeek!: Date;
 
+  sections = [
+    { key: 'morning', name: 'Morning' },
+    { key: 'lunch', name: 'Lunch' },
+    { key: 'evening', name: 'Evening' },
+    { key: 'snacks', name: 'Snacks and Drinks' },
+  ];
+
   @Input()
-  set date(date: Date | null) {
-    this.selectedDay = date ? new Date(date.getTime()) : new Date();
+  set date(date: Date) {
+    this.selectedDay = new Date(date.getTime());
   }
+
+  @Input()
+  items!: ScheduleList;
 
   @Output()
   change = new EventEmitter<Date>();
@@ -44,6 +71,10 @@ export class ScheduleCalendarComponent implements OnChanges {
     this.selectedWeek = this.getStartOfWeek(new Date(this.selectedDay));
   }
 
+  getSection(name: string): ScheduleItem {
+    return (this.items && this.items[name]) || {};
+  }
+
   selectDay(index: number) {
     const selectedDay = new Date(this.selectedWeek);
     selectedDay.setDate(selectedDay.getDate() + index);
@@ -52,10 +83,12 @@ export class ScheduleCalendarComponent implements OnChanges {
 
   onChange(weekOffset: number) {
     const startOfWeek = this.getStartOfWeek(new Date());
-    const startDate = (
-      new Date(startOfWeek.getFullYear(), startOfWeek.getMonth(), startOfWeek.getDate())
+    const startDate = new Date(
+      startOfWeek.getFullYear(),
+      startOfWeek.getMonth(),
+      startOfWeek.getDate()
     );
-    startDate.setDate(startDate.getDate() + (weekOffset * 7));
+    startDate.setDate(startDate.getDate() + weekOffset * 7);
     this.change.emit(startDate);
   }
 
