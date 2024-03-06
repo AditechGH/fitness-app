@@ -41,6 +41,10 @@ export interface ScheduleList {
   [key: string]: any;
 }
 
+export interface ListItem {
+  name: string; 
+}
+
 @Injectable()
 export class ScheduleService {
   private _store: Store = inject(Store);
@@ -52,6 +56,11 @@ export class ScheduleService {
 
   selected$ = this.section$.pipe(
     tap((next: any) => this._store.set('selected', next))
+  );
+
+  list$ = this.section$.pipe(
+    map((value: any) => this._store.value[value.type]),
+    tap((next: any) => this._store.set('list', next))
   );
 
   schedule$: Observable<ScheduleList> = this.date$.pipe(

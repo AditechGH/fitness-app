@@ -1,21 +1,36 @@
-import { AsyncPipe } from '@angular/common';
+import { AsyncPipe, NgIf } from '@angular/common';
 import { Component, OnDestroy, OnInit, inject } from '@angular/core';
 import { Observable, Subscription } from 'rxjs';
 import { Store } from 'store';
 
-// component
+// components
+import { ScheduleAssignComponent } from '../../components/schedule-assign/schedule-assign.component';
 import { ScheduleCalendarComponent } from '../../components/schedule-calendar/schedule-calendar.component';
 
-// service
+// services
 import {
-  ScheduleList,
+  Meal,
+  MealsService,
+} from '../../../shared/services/meals/meals.service';
+import {
+  ListItem,
+  ScheduleItem,
   ScheduleService,
 } from '../../../shared/services/schedule/schedule.service';
+import {
+  Workout,
+  WorkoutsService,
+} from '../../../shared/services/workouts/workouts.service';
 
 @Component({
   selector: 'schedule',
   standalone: true,
-  imports: [AsyncPipe, ScheduleCalendarComponent],
+  imports: [
+    AsyncPipe,
+    NgIf,
+    ScheduleCalendarComponent,
+    ScheduleAssignComponent,
+  ],
   template: `
     <div class="schedule">
       <schedule-calendar
@@ -24,6 +39,13 @@ import {
         (change)="changeDate($event)"
         (select)="changeSection($event)"
       ></schedule-calendar>
+
+      <schedule-assign
+        *ngIf="open"
+        [section]="(selected$ | async)!"
+        [list]="(list$ | async)!"
+      >
+      </schedule-assign>
     </div>
   `,
   styleUrl: './schedule.component.scss',
@@ -31,9 +53,15 @@ import {
 export class ScheduleComponent implements OnInit, OnDestroy {
   private _store: Store = inject(Store);
   private _scheduleService: ScheduleService = inject(ScheduleService);
+  private _mealsService: MealsService = inject(MealsService);
+  private _workoutsService: WorkoutsService = inject(WorkoutsService);
+
+  open = false;
 
   date$!: Observable<Date>;
-  schedule$!: Observable<ScheduleList>;
+  selected$!: Observable<any>;
+  list$!: Observable<ListItem[]>;
+  schedule$!: Observable<ScheduleItem[]>;
   subscriptions: Subscription[] = [];
 
   changeDate(date: Date) {
@@ -41,20 +69,26 @@ export class ScheduleComponent implements OnInit, OnDestroy {
   }
 
   changeSection(event: any) {
+    this.open = true;
     this._scheduleService.selectSection(event);
   }
 
-  ngOnInit(): void {
+  ngOnInit() {
     this.date$ = this._store.select('date');
-    this.schedule$ = this._store.select('date');
+    this.schedule$ = this._store.select('schedule');
+    this.selected$ = this._store.select('selected');
+    this.list$ = this._store.select('list');
 
     this.subscriptions = [
       this._scheduleService.schedule$.subscribe(),
       this._scheduleService.selected$.subscribe(),
+      this._scheduleService.list$.subscribe(),
+      this._mealsService.meals$.subscribe(),
+      this._workoutsService.workouts$.subscribe(),
     ];
   }
 
-  ngOnDestroy(): void {
-    this.subscriptions.forEach((sub) => sub.unsubscribe());
+  ngOnDestroy() {
+    this.subscriptions.forEach(sub => sub.unsubscribe());
   }
 }
